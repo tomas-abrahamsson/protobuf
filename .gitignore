@@ -72,4 +72,5 @@ Makefile.in
 /python/protobuf.egg-info/
 /python/build/
 /python/dist/
-/benchmarks/tmp/
+/benchmarks/jtmp/
+/benchmarks/pytmp/
