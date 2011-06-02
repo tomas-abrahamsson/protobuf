@@ -93,8 +93,17 @@ message SizeMessage2 {
   optional int32 field221 = 221 [default=0];
   optional float field222 = 222 [default=0.0];
   optional int32 field63 = 63;
+  repeated SizeMessage2Group1 Group1 = 10;
+  repeated string field128 = 128;
+  optional int64 field131 = 131;
+  repeated string field127 = 127;
+  optional int32 field129 = 129;
+  repeated int64 field130 = 130;
+  optional bool field205 = 205 [default=false];
+  optional bool field206 = 206 [default=false];
+}
 
-  repeated group Group1 = 10 {
+message SizeMessage2Group1 {
     required float field11 = 11;
     optional float field26 = 26;
     optional string field12 = 12;
@@ -111,14 +120,6 @@ message SizeMessage2 {
     optional int32 field20 = 20 [default=0];
     optional string field24 = 24;
     optional SizeMessage2GroupedMessage field31 = 31;
-  }
-  repeated string field128 = 128;
-  optional int64 field131 = 131;
-  repeated string field127 = 127;
-  optional int32 field129 = 129;
-  repeated int64 field130 = 130;
-  optional bool field205 = 205 [default=false];
-  optional bool field206 = 206 [default=false];
 }
 
 message SizeMessage2GroupedMessage {
