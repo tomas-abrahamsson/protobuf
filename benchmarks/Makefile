@@ -10,6 +10,8 @@ all:	benchmarks-java-code benchmarks-python-code benchmarks-cc-code
 	@echo "consider $(MAKE) benchmarks"
 	@echo "      or $(MAKE) java-benchmarks"
 	@echo "      or $(MAKE) python-benchmarks"
+	@echo "      or $(MAKE) cc-benchmarks"
+	@echo "      or $(MAKE) cc-static-benchmarks"
 	@echo
 
 topjavaclasses =	jtmp/benchmarks/GoogleSpeed.class \
