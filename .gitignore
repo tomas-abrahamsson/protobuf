@@ -74,3 +74,4 @@ Makefile.in
 /python/dist/
 /benchmarks/jtmp/
 /benchmarks/pytmp/
+/benchmarks/cctmp/
