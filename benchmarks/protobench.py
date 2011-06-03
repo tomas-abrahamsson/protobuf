@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 
+import gc
 import sys
 import timeit
 
@@ -32,25 +33,28 @@ class Encoder:
     def __call__(self):
         return self.msg.SerializeToString()
 
+def timeAction(numIterations, action):
+    t = timeit.Timer(stmt=action)
+    gc.collect()
+    return t.timeit(number=numIterations)
+
 def benchmark(descr, action, dataSize):
     minSampleTime = 2
-    targetTime = 30
-
-    t = timeit.Timer(stmt=action)
+    targetTime = 5
 
     # exercise it a little, to ensure it is loaded and what not
-    t.timeit(number=10)
+    timeAction(10, action)
 
     # find out how many iterations we need to make it run for about 30s
     iterations = 1
-    elapsed = t.timeit(number=iterations)
+    elapsed = timeAction(iterations, action)
     while elapsed < minSampleTime:
         iterations = iterations * 2
-        elapsed = t.timeit(number=iterations)
+        elapsed = timeAction(iterations, action)
     iterations = int(round((targetTime / elapsed) * iterations))
 
     # now make it run
-    elapsed = t.timeit(number=iterations)
+    elapsed = timeAction(iterations, action)
     print "%s: %d iterations in %.3fs; %.2fMB/s" % \
           (descr, iterations,
            elapsed,
