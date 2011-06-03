@@ -1,6 +1,10 @@
 protoc = ../src/protoc
 protobuf_jar = ../java/protobuf.jar
 
+protobuf_vsn := $(shell grep AC_INIT ../configure.ac | \
+	cut -d, -f2 | \
+	tr -d '[][]')
+
 all:	benchmarks-java-code benchmarks-python-code benchmarks-cc-code
 	@echo
 	@echo "consider $(MAKE) benchmarks"
@@ -64,6 +68,8 @@ java-benchmarks: benchmarks-java-code
 	@printf "# cores/threads : %s\n" `egrep -c '^processor' /proc/cpuinfo`
 	@egrep '^bogomips' /proc/cpuinfo | head -1
 	@echo
+	@echo "Protobuf version: $(protobuf_vsn)"
+	@echo
 	java -version
 	@echo
 	cd jtmp && \
@@ -80,6 +86,8 @@ python-benchmarks:  benchmarks-python-code
 	@printf "# cores/threads : %s\n" `egrep -c '^processor' /proc/cpuinfo`
 	@egrep '^bogomips' /proc/cpuinfo | head -1
 	@echo
+	@echo "Protobuf version: $(protobuf_vsn)"
+	@echo
 	python -V
 	@echo
 	env PYTHONPATH=pytmp:../python python protobench.py \
@@ -93,6 +101,8 @@ cc-benchmarks:  benchmarks-cc-code
 	@printf "# cores/threads : %s\n" `egrep -c '^processor' /proc/cpuinfo`
 	@egrep '^bogomips' /proc/cpuinfo | head -1
 	@echo
+	@echo "Protobuf version: $(protobuf_vsn)"
+	@echo
 	gcc --version
 	@echo
 	cctmp/protobench
@@ -103,6 +113,8 @@ cc-static-benchmarks:  benchmarks-cc-static-code
 	@egrep '^cache' /proc/cpuinfo | head -1
 	@printf "# cores/threads : %s\n" `egrep -c '^processor' /proc/cpuinfo`
 	@egrep '^bogomips' /proc/cpuinfo | head -1
+	@echo
+	@echo "Protobuf version: $(protobuf_vsn)"
 	@echo
 	gcc --version
 	@echo
