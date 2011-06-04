@@ -38,14 +38,19 @@ $(toppythonmodules): $(wildcard *.proto)
 	[ -d pytmp ] || mkdir pytmp
 	$(protoc) --python_out=pytmp google_size.proto google_speed.proto
 
-benchmarks-cc-code: $(topccfiles) cctmp/protobench
-benchmarks-cc-static-code: $(topccfiles) cctmp/protobench-static
+benchmarks-cc-code: $(topccfiles) \
+	cctmp/protobench \
+	cctmp/protobench-static \
+	cctmp/protobench-lite \
+	cctmp/protobench-lite-static
 
 $(topccfiles): $(wildcard *.proto)
 	[ -d cctmp ] || mkdir cctmp
-	$(protoc) --cpp_out=cctmp google_size.proto google_speed.proto
+	$(protoc) --cpp_out=cctmp google_size.proto google_speed.proto \
+				  google_lite.proto
 	cd cctmp; g++ -I../../src -c google_speed.pb.cc
 	cd cctmp; g++ -I../../src -c google_size.pb.cc
+	cd cctmp; g++ -I../../src -c google_lite.pb.cc
 
 cctmp/protobench: protobench.cc
 	g++ -Wall -I../src -Icctmp -o $@ $< \
@@ -54,16 +59,31 @@ cctmp/protobench: protobench.cc
 
 cctmp/protobench-static: protobench.cc
 	g++ -Wall -I../src -Icctmp -o $@ $< \
-	  cctmp/google_speed.pb.o cctmp/google_size.pb.o \
+	  cctmp/google_speed.pb.o cctmp/google_size.pb.o cctmp/google_lite.pb.o\
 	  ../src/.libs/libprotobuf.a -lpthread
 
+cctmp/protobench-lite: protobench-lite.cc
+	g++ -Wall -I../src -Icctmp -o $@ $< \
+	  cctmp/google_lite.pb.o \
+	  -L../src/.libs -lprotobuf-lite -Wl,-rpath=`pwd`/../src/.libs
+
+cctmp/protobench-lite-static: protobench-lite.cc
+	g++ -Wall -I../src -Icctmp -o $@ $< \
+	  cctmp/google_lite.pb.o \
+	  ../src/.libs/libprotobuf-lite.a -lpthread
 
 clean:
 	$(RM) -r jtmp pytmp cctmp
 
-benchmarks: java-benchmarks python-benchmarks cc-benchmarks
+benchmarks: java-benchmarks python-benchmarks \
+	cc-benchmarks \
+	cc-static-benchmarks \
+	cc-lite-benchmarks \
+	cc-lite-static-benchmarks
 
 java-benchmarks: benchmarks-java-code
+	@echo Running $@ ---------------------------------------------
+	@echo
 	@echo CPU info
 	@egrep '^model name' /proc/cpuinfo | head -1
 	@egrep '^cache' /proc/cpuinfo | head -1
@@ -82,6 +102,8 @@ java-benchmarks: benchmarks-java-code
           benchmarks.GoogleSpeed'$$'SpeedMessage2 ../google_message2.dat
 
 python-benchmarks:  benchmarks-python-code
+	@echo Running $@ ---------------------------------------------
+	@echo
 	@echo CPU info
 	@egrep '^model name' /proc/cpuinfo | head -1
 	@egrep '^cache' /proc/cpuinfo | head -1
@@ -97,6 +119,8 @@ python-benchmarks:  benchmarks-python-code
           google_speed_pb2.SpeedMessage2 google_message2.dat
 
 cc-benchmarks:  benchmarks-cc-code
+	@echo Running $@ ---------------------------------------------
+	@echo
 	@echo CPU info
 	@egrep '^model name' /proc/cpuinfo | head -1
 	@egrep '^cache' /proc/cpuinfo | head -1
@@ -109,7 +133,9 @@ cc-benchmarks:  benchmarks-cc-code
 	@echo
 	cctmp/protobench
 
-cc-static-benchmarks:  benchmarks-cc-static-code
+cc-static-benchmarks:  benchmarks-cc-code
+	@echo Running $@ ---------------------------------------------
+	@echo
 	@echo CPU info
 	@egrep '^model name' /proc/cpuinfo | head -1
 	@egrep '^cache' /proc/cpuinfo | head -1
@@ -121,3 +147,33 @@ cc-static-benchmarks:  benchmarks-cc-static-code
 	gcc --version
 	@echo
 	cctmp/protobench-static
+
+cc-lite-benchmarks:  benchmarks-cc-code
+	@echo Running $@ ---------------------------------------------
+	@echo
+	@echo CPU info
+	@egrep '^model name' /proc/cpuinfo | head -1
+	@egrep '^cache' /proc/cpuinfo | head -1
+	@printf "# cores/threads : %s\n" `egrep -c '^processor' /proc/cpuinfo`
+	@egrep '^bogomips' /proc/cpuinfo | head -1
+	@echo
+	@echo "Protobuf version: $(protobuf_vsn)"
+	@echo
+	gcc --version
+	@echo
+	cctmp/protobench-lite
+
+cc-lite-static-benchmarks:  benchmarks-cc-code
+	@echo Running $@ ---------------------------------------------
+	@echo
+	@echo CPU info
+	@egrep '^model name' /proc/cpuinfo | head -1
+	@egrep '^cache' /proc/cpuinfo | head -1
+	@printf "# cores/threads : %s\n" `egrep -c '^processor' /proc/cpuinfo`
+	@egrep '^bogomips' /proc/cpuinfo | head -1
+	@echo
+	@echo "Protobuf version: $(protobuf_vsn)"
+	@echo
+	gcc --version
+	@echo
+	cctmp/protobench-lite-static
