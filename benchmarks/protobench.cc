@@ -50,12 +50,14 @@ main(int argc, char **argv)
     m4 = new benchmarks::SizeMessage2();
 
     benchmark("SpeedMessage1", "google_message1.dat", m1, data1, data1Len);
-    benchmark("SpeedMessage1", "google_message2.dat", m2, data2, data2Len);
-    benchmark("SizeMessage1",  "google_message1.dat", m1, data1, data1Len);
-    benchmark("SizeMessage1",  "google_message2.dat", m2, data2, data2Len);
+    benchmark("SpeedMessage2", "google_message2.dat", m2, data2, data2Len);
+    benchmark("SizeMessage1",  "google_message1.dat", m3, data1, data1Len);
+    benchmark("SizeMessage2",  "google_message2.dat", m4, data2, data2Len);
 
     delete m1;
     delete m2;
+    delete m3;
+    delete m4;
     return 0;
 }
 
