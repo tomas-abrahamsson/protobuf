@@ -48,27 +48,27 @@ $(topccfiles): $(wildcard *.proto)
 	[ -d cctmp ] || mkdir cctmp
 	$(protoc) --cpp_out=cctmp google_size.proto google_speed.proto \
 				  google_lite.proto
-	cd cctmp; g++ -I../../src -c google_speed.pb.cc
-	cd cctmp; g++ -I../../src -c google_size.pb.cc
-	cd cctmp; g++ -I../../src -c google_lite.pb.cc
+	cd cctmp; g++ -O3 -I../../src -c google_speed.pb.cc
+	cd cctmp; g++ -O3 -I../../src -c google_size.pb.cc
+	cd cctmp; g++ -O3 -I../../src -c google_lite.pb.cc
 
 cctmp/protobench: protobench.cc
-	g++ -Wall -I../src -Icctmp -o $@ $< \
+	g++ -Wall -O3 -I../src -Icctmp -o $@ $< \
 	  cctmp/google_speed.pb.o cctmp/google_size.pb.o \
 	  -L../src/.libs -lprotobuf -Wl,-rpath=`pwd`/../src/.libs
 
 cctmp/protobench-static: protobench.cc
-	g++ -Wall -I../src -Icctmp -o $@ $< \
+	g++ -Wall -O3 -I../src -Icctmp -o $@ $< \
 	  cctmp/google_speed.pb.o cctmp/google_size.pb.o cctmp/google_lite.pb.o\
 	  ../src/.libs/libprotobuf.a -lpthread
 
 cctmp/protobench-lite: protobench-lite.cc
-	g++ -Wall -I../src -Icctmp -o $@ $< \
+	g++ -Wall -O3 -I../src -Icctmp -o $@ $< \
 	  cctmp/google_lite.pb.o \
 	  -L../src/.libs -lprotobuf-lite -Wl,-rpath=`pwd`/../src/.libs
 
 cctmp/protobench-lite-static: protobench-lite.cc
-	g++ -Wall -I../src -Icctmp -o $@ $< \
+	g++ -Wall -O3 -I../src -Icctmp -o $@ $< \
 	  cctmp/google_lite.pb.o \
 	  ../src/.libs/libprotobuf-lite.a -lpthread
 
